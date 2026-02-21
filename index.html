@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Netflix Catalog</title>
+    <style>body { font-family: sans-serif; padding: 20px; } .item { border-bottom: 1px solid #ccc; padding: 10px; }</style>
+</head>
+<body>
+    <h1>Catálogo de Netflix</h1>
+    
+    <button onclick="fetchData('movie')">LISTA DE PELÍCULAS</button>
+    <button onclick="fetchData('series')">LISTA DE SERIES</button>
+
+    <h3>Agregar Película</h3>
+    <input id="m-name" placeholder="Nombre"> <input id="m-dir" placeholder="Director"> <input id="m-year" placeholder="Año">
+    <button onclick="sendData('movie')">AGREGAR NUEVA PELÍCULA</button>
+
+    <h3>Agregar Serie</h3>
+    <input id="s-name" placeholder="Nombre"> <input id="s-year" placeholder="Año"> <input id="s-sea" placeholder="Temporadas">
+    <button onclick="sendData('series')">AGREGAR NUEVA SERIE</button>
+
+    <div id="display"></div>
+
+    <script>
+        const API = 'http://localhost:3000/catalog';
+
+        async function fetchData(type) {
+            const res = await fetch(`${API}?type=${type}`);
+            const data = await res.json();
+            render(data, type);
+        }
+
+        async function sendData(type) {
+            const body = type === 'movie' 
+                ? { name: document.getElementById('m-name').value, director: document.getElementById('m-dir').value, year: document.getElementById('m-year').value }
+                : { name: document.getElementById('s-name').value, year: document.getElementById('s-year').value, seasons: document.getElementById('s-sea').value };
+            
+            await fetch(API, { method: 'POST', body: JSON.stringify(body) });
+            fetchData(type);
+        }
+
+        async function deleteItem(name, type) {
+            await fetch(`${API}?name=${name}&type=${type}`, { method: 'DELETE' });
+            fetchData(type);
+        }
+
+        function render(data, type) {
+            const container = document.getElementById('display');
+            container.innerHTML = `<h4>Listado de ${type}</h4>`;
+            data.forEach(item => {
+                container.innerHTML += `<div class="item">
+                    ${item.name} (${item.year}) - ${item.director || item.seasons + ' temp.'}
+                    <button onclick="deleteItem('${item.name}', '${type}')">Eliminar</button>
+                </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
