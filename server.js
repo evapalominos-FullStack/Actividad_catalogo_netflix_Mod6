@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs/promises');
 const url = require('url');
 
-const FILE_MOVIES = 'movies.txt';
+const FILE_MOVIES = 'peliculas.txt';
 const FILE_SERIES = 'series.txt';
 
 const server = http.createServer(async (req, res) => {
@@ -65,3 +65,4 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(3000, () => console.log('Servidor corriendo en [Node.js Documentation](https://nodejs.org) puerto 3000'));
+
